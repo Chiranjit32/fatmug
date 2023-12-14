@@ -6,6 +6,7 @@ from rest_framework import status
 from rest_framework.response import Response
 from django.views import View
 from . import models
+from datetime import datetime
 from django.contrib.messages import get_messages
 from django.contrib.auth import authenticate, login, logout
 from django.core import serializers
@@ -336,6 +337,7 @@ def purchaseOrderListCreate(request):
                 purchaseOrder.vendor.save()
 
                 historical_performances = models.Historical_Performance()
+                historical_performances.date = datetime.now()
                 historical_performances.vendor_id = purchaseOrder.vendor.pk
                 historical_performances.on_time_delivery_rate = purchaseOrder.vendor.on_time_delivery_rate
                 historical_performances.quality_rating_avg = purchaseOrder.vendor.quality_rating_avg
@@ -434,6 +436,7 @@ def purchaseOrderRetrieveUpdateDelete(request, pk):
                 purchaseOrder.vendor.save()
 
                 historical_performances = models.Historical_Performance()
+                historical_performances.date = datetime.now()
                 historical_performances.vendor_id = purchaseOrder.vendor.pk
                 historical_performances.on_time_delivery_rate = purchaseOrder.vendor.on_time_delivery_rate
                 historical_performances.quality_rating_avg = purchaseOrder.vendor.quality_rating_avg
@@ -453,9 +456,10 @@ def purchaseOrderRetrieveUpdateDelete(request, pk):
             transaction.rollback()
         return JsonResponse(context)
     elif request.method == 'DELETE':
-        purchaseOrder = models.Purchase_Order.objects.get(pk=pk)
         try:
             with transaction.atomic():
+                purchaseOrder = models.Purchase_Order.objects.get(pk=pk)
+                purchaseOrder.delete()
                 completed_orders = purchaseOrder.vendor.purchase_order_set.filter(status='completed')
 
                 # On-Time Delivery Rate
@@ -478,13 +482,13 @@ def purchaseOrderRetrieveUpdateDelete(request, pk):
                 purchaseOrder.vendor.save()
 
                 historical_performances = models.Historical_Performance()
+                historical_performances.date = datetime.now()
                 historical_performances.vendor_id = purchaseOrder.vendor.pk
                 historical_performances.on_time_delivery_rate = purchaseOrder.vendor.on_time_delivery_rate
                 historical_performances.quality_rating_avg = purchaseOrder.vendor.quality_rating_avg
                 historical_performances.average_response_time = purchaseOrder.vendor.average_response_time
                 historical_performances.fulfillment_rate = purchaseOrder.vendor.fulfillment_rate
                 historical_performances.save()
-                purchaseOrder.delete()
             transaction.commit()
             context.update({
                 'status': 200,
