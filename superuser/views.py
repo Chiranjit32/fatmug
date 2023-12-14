@@ -18,7 +18,7 @@ def dashboard(request):
         'page_title': "Dashboard",
         'breadcrumbs': [{'name': "Dashboard", 'url': reverse('superuser:dashboard')}]
     })
-    return render(request, 'portal/dashboard.html', context)
+    return render(request, 'portal/home.html', context)
 
 
 

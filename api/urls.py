@@ -14,5 +14,5 @@ urlpatterns = [
     path('vendors/<int:pk>/', views.vendorRetrieveUpdateDelete, name='vendor-retrieve-update-delete'),
     path('purchase_orders/', views.purchaseOrderListCreate, name='purchase-order-list-create'),
     path('purchase_orders/<int:pk>/', views.purchaseOrderRetrieveUpdateDelete, name='purchase-order-retrieve-update-delete'),
-    # path('vendors/<int:vendor_id>/performance/', views.VendorPerformanceView.as_view(), name='vendor-performance'),
+    path('vendors/<int:vendor_id>/performance/', views.vendorPerformance, name='vendor-performance'),
 ]

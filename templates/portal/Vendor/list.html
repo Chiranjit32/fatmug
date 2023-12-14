@@ -98,6 +98,32 @@
     </div>
     <!--/ Form Element End -->
 </div>
+<!-- The Modal -->
+<div class="modal" id="performanceModal">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close modal-close-btn"
+                    data-dismiss="modal">&times;</button>
+            </div>
+
+            <!-- Modal body -->
+            <div class="modal-body" id="performance-metrics">
+
+            </div>
+
+            <!-- Modal footer -->
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger modal-close-btn"
+                    data-dismiss="modal">Close</button>
+            </div>
+
+        </div>
+    </div>
+</div>
 {% endblock %}
 
 {% block js %}
@@ -132,6 +158,7 @@
                                 <td>
                                     <a href="${edit_url.replace('1', element.pk)}" class="table-action mg-r-10"> <i class="fa fa-pencil"></i> </a>    
                                     <a data-id="${element.pk}" data-name="${element.name}" href="javascript:void(0)" class="table-action mg-r-10 delete-btn"> <i class="fa fa-trash"></i> </a>
+                                    <a data-id="${element.pk}" data-toggle="modal" data-target="#performanceModal" data-name="${element.name}" href="javascript:void(0)" class="table-action mg-r-10 performance-btn"> <i class="fa fa-bar-chart"></i> </a>
                                 </td>
                             </tr>`;
                     }
@@ -191,6 +218,40 @@
                 }
             });
         }
+    });
+
+    $(document).on('click', '.performance-btn', function () {
+        pk = $(this).attr('data-id');
+        name = $(this).attr('data-name');
+        $.ajax({
+            type: "GET",
+            url: "{% url 'api:vendor-performance' 1 %}".replace('1', pk),
+            data: ({}),
+            headers: {
+                'Authorization': getCookieValue("accessToken"),
+            },
+            success: function (response) {
+                if (response.status == 200) {
+                    $('.modal-title').text('Performance Metrics for ' + name);
+                    var performanceMetrics = $('#performance-metrics');
+                    performanceMetrics.empty();
+
+                    // Display the metrics as desired, for example:
+                    performanceMetrics.append($('<p>').text('On-Time Delivery Rate: ' + response.on_time_delivery_rate));
+                    performanceMetrics.append($('<p>').text('Quality Rating Average: ' + response.quality_rating_avg));
+                    performanceMetrics.append($('<p>').text('Average Response Time: ' + response.average_response_time));
+                    performanceMetrics.append($('<p>').text('Fulfillment Rate: ' + response.fulfillment_rate));
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                $('.success-msg-txt').text("");
+                $('.error-msg-txt').removeClass('text-secondary').removeClass('text-info').removeClass('text-success').removeClass('text-warning').removeClass('text-danger');
+                $('.error-msg-txt').addClass('text-danger');
+                $('.error-msg-txt').text(error.responseJSON != null ? error.responseJSON.detail : error.statusText);
+            }
+        });
     });
 </script>
 {% endblock %}

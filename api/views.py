@@ -78,6 +78,7 @@ def getUserDetails(request):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def vendorListCreate(request):
     context = {}
     if request.method == 'GET':
@@ -157,6 +158,7 @@ def vendorListCreate(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def vendorRetrieveUpdateDelete(request, pk):
     context = {}
     if request.method == 'GET':
@@ -221,6 +223,7 @@ def vendorRetrieveUpdateDelete(request, pk):
 
 
 @api_view(['GET', 'POST'])
+@permission_classes([IsAuthenticated])
 def purchaseOrderListCreate(request):
     context = {}
     if request.method == 'GET':
@@ -355,6 +358,7 @@ def purchaseOrderListCreate(request):
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
+@permission_classes([IsAuthenticated])
 def purchaseOrderRetrieveUpdateDelete(request, pk):
     context = {}
     if request.method == 'GET':
@@ -452,6 +456,34 @@ def purchaseOrderRetrieveUpdateDelete(request, pk):
         purchaseOrder = models.Purchase_Order.objects.get(pk=pk)
         try:
             with transaction.atomic():
+                completed_orders = purchaseOrder.vendor.purchase_order_set.filter(status='completed')
+
+                # On-Time Delivery Rate
+                completed_on_time = completed_orders.filter(delivery_date__lte=F('acknowledgment_date'))
+                purchaseOrder.vendor.on_time_delivery_rate = (completed_on_time.count() / completed_orders.count()) * 100 if completed_orders.count() > 0 else 0
+
+                # Quality Rating Average
+                quality_ratings = completed_orders.exclude(quality_rating__isnull=True).values_list('quality_rating', flat=True)
+                purchaseOrder.vendor.quality_rating_avg = sum(quality_ratings) / len(quality_ratings) if len(quality_ratings) > 0 else 0
+
+                # Average Response Time
+                response_times = completed_orders.exclude(acknowledgment_date__isnull=True).values_list('acknowledgment_date', 'issue_date')
+                average_response_time = sum((ack_date - issue_date).seconds for ack_date, issue_date in response_times) / len(response_times) if len(response_times) > 0 else 0
+                purchaseOrder.vendor.average_response_time = average_response_time / 3600  # Convert seconds to hours
+
+                # Fulfillment Rate
+                successful_orders = completed_orders.filter(status='completed', issue_date__lte=F('acknowledgment_date'))
+                purchaseOrder.vendor.fulfillment_rate = (successful_orders.count() / completed_orders.count()) * 100 if completed_orders.count() > 0 else 0
+
+                purchaseOrder.vendor.save()
+
+                historical_performances = models.Historical_Performance()
+                historical_performances.vendor_id = purchaseOrder.vendor.pk
+                historical_performances.on_time_delivery_rate = purchaseOrder.vendor.on_time_delivery_rate
+                historical_performances.quality_rating_avg = purchaseOrder.vendor.quality_rating_avg
+                historical_performances.average_response_time = purchaseOrder.vendor.average_response_time
+                historical_performances.fulfillment_rate = purchaseOrder.vendor.fulfillment_rate
+                historical_performances.save()
                 purchaseOrder.delete()
             transaction.commit()
             context.update({
@@ -466,3 +498,26 @@ def purchaseOrderRetrieveUpdateDelete(request, pk):
             transaction.rollback()
         return JsonResponse(context)
     return JsonResponse(context)
+
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def vendorPerformance(request, vendor_id):
+    context = {}
+    if request.method == 'GET':
+        try:
+            vendor = models.Vendor.objects.get(pk=vendor_id)
+            context.update({
+                'status': 200,
+                'on_time_delivery_rate': vendor.on_time_delivery_rate,
+                'quality_rating_avg': vendor.quality_rating_avg,
+                'average_response_time': vendor.average_response_time,
+                'fulfillment_rate': vendor.fulfillment_rate,
+            })
+            return JsonResponse(context)
+        except models.Vendor.DoesNotExist:
+            context.update({
+                'status': 515,
+                'message': "Vendor Not Found."
+            })
+            return JsonResponse(context)
