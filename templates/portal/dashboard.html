@@ -1,0 +1,551 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block css %}
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <!--================================-->
+    <!-- Breadcrumb Start -->
+    <!--================================-->
+    <div class="pageheader pd-t-25 pd-b-35">
+        <div class="d-flex justify-content-between">
+            <div class="clearfix">
+                <div class="pd-t-5 pd-b-5">
+                    <h1 class="pd-0 mg-0 tx-20 tx-dark">{{page_title}}</h1>
+                </div>
+                <div class="breadcrumb pd-0 mg-0">
+                    {% for breadcrumb in breadcrumbs %}
+                    {% if forloop.counter != breadcrumbs|length %}
+                    <a class="breadcrumb-item" href="{{breadcrumb.url}}">{{breadcrumb.name}}</a>
+                    {% else %}
+                    <span class="breadcrumb-item active">{{breadcrumb.name}}</span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ Breadcrumb End -->
+    <!--================================-->
+    <!-- Form Element Start -->
+    <!--================================-->
+    <div class="row row-xs clearfix">
+        <div class="col-md-12 col-lg-12">
+            {% if messages %}
+            {% for message in messages %}
+            {% if forloop.counter == messages|length %}
+            <div class="{{ message.tags }} vendor-success-msg-txt" style="height: 30px; text-align: center;">{{ message
+                }}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            <div class="vendor-error-msg-txt" style="height: 30px; text-align: center;"></div>
+            <div class="card mg-b-30">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-header-title tx-13 mb-0">Create Vendor</h6>
+                        </div>
+                        <div class="text-right">
+                            <div class="d-flex">
+                                <a href="" class="mr-3"><i class="ti-reload"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="create-vendor-form" class="needs-validation" novalidate>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <label>Vendor Name <span class="required-indicator">*</span></label>
+                                <input type="text" name="name" id="vendor-name" class="form-control"
+                                    placeholder="Vendor Name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Vendor Code <span class="required-indicator">*</span></label>
+                                <input type="text" name="vendor-code" id="vendor-code" class="form-control"
+                                    placeholder="Vendor Code" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Contact Details <span class="required-indicator">*</span></label>
+                                <textarea name="vendor-contact" class="form-control" id="vendor-contact" rows="5"
+                                    required></textarea>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Address <span class="required-indicator">*</span></label>
+                                <textarea name="vendor-address" class="form-control" id="vendor-address" rows="5"
+                                    required></textarea>
+                            </div>
+                        </div>
+                        <button class="btn btn-success vendor-submit-btn" type="submit">Create Vendor</button>
+                    </form>
+                </div>
+            </div>
+
+            {% if messages %}
+            {% for message in messages %}
+            {% if forloop.counter == messages|length %}
+            <div class="{{ message.tags }} po-success-msg-txt" style="height: 30px; text-align: center;">{{ message }}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            <div class="po-error-msg-txt" style="height: 30px; text-align: center;"></div>
+            <div class="card mg-b-30">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-header-title tx-13 mb-0">Create Purchase Order</h6>
+                        </div>
+                        <div class="text-right">
+                            <div class="d-flex">
+                                <a href="" class="mr-3"><i class="ti-reload"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="create-po-form" class="needs-validation" novalidate>
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <label>PO Number <span class="required-indicator">*</span></label>
+                                <input type="text" name="name" id="po-number" class="form-control"
+                                    placeholder="PO Number" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Vendor ID <span class="required-indicator">*</span></label>
+                                <div class="input-group">
+                                    <select class="custom-select selectpicker" id="vendor-id" name="vendor-id" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Order Date <span class="required-indicator">*</span></label>
+                                <input type="datetime-local" name="order-date" id="order-date" class="form-control"
+                                    placeholder="Order Date" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Delivery Date <span class="required-indicator">*</span></label>
+                                <input type="datetime-local" name="delivery-date" id="delivery-date"
+                                    class="form-control" placeholder="Delivery Date" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Issue Date <span class="required-indicator">*</span></label>
+                                <input type="datetime-local" name="issue-date" id="issue-date" class="form-control"
+                                    placeholder="Issue Date" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Acknowledgment Date <span class="required-indicator">*</span></label>
+                                <input type="datetime-local" name="acknowledgment-date" id="acknowledgment-date"
+                                    class="form-control" placeholder="Acknowledgment Date" required>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-row content_parent">
+                                    <div class="col-md-3 mb-3">
+                                        <label>Item <span class="required-indicator">*</span></label>
+                                        <input type="text" name="item-name" class="item-name form-control"
+                                            placeholder="Item Name" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Rate <span class="required-indicator">*</span></label>
+                                        <input type="text" onkeyup="checkMaxMin(this)"
+                                            onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                            name="item-rate" min="0.01" class="form-control item-rate"
+                                            placeholder="0.00" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label>Quantity <span class="required-indicator">*</span></label>
+                                        <input type="text" onkeyup="checkMaxMin(this)"
+                                            onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                            name="item-quantity" min="1" class="form-control item-quantity"
+                                            placeholder="Quantity" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Price <span class="required-indicator">*</span></label>
+                                        <input type="text" onkeyup="checkMaxMin(this)" readonly
+                                            onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                            name="item-price" min="0.01" class="form-control item-price"
+                                            placeholder="0.00" required>
+                                    </div>
+                                    <div class="col-md-1 mb-4 text-center ">
+                                        <button type="button" class="btn add_btn mt-1"><i
+                                                class="fa fa-plus"></i></button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="add_more_content col-md-12">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Status <span class="required-indicator">*</span></label>
+                                <input type="text" name="status" id="status" class="form-control" placeholder="Status"
+                                    required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Quality Rating <span class="required-indicator">*</span></label>
+                                <input type="text" onkeyup="checkMaxMin(this)" max="5" min="0"
+                                    onkeypress="return event.charCode >= 48 && event.charCode <= 57"
+                                    name="quality-rating" id="quality-rating" class="form-control" placeholder="5"
+                                    required>
+                            </div>
+                        </div>
+                        <button class="btn btn-success po-submit-btn" type="submit">Create Purchase Order</button>
+                    </form>
+                </div>
+            </div>
+
+
+            <div class="card mg-b-30">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-header-title tx-13 mb-0">Vendor List</h6>
+                        </div>
+                        <div class="text-right">
+                            <div class="d-flex">
+                                <a href="" class="mr-3"><i class="ti-reload"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pd-0">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Vendor Name</th>
+                                    <th>Vendor Code</th>
+                                    <th>Contact Details</th>
+                                    <th>Address</th>
+                                    <th>Performance</th>
+                                </tr>
+                            </thead>
+                            <tbody id="vendor-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div id="performance-metrics"></div>
+                </div>
+            </div>
+
+
+            <div class="card mg-b-30">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-header-title tx-13 mb-0">Purchase Order List</h6>
+                        </div>
+                        <div class="text-right">
+                            <div class="d-flex">
+                                <a href="" class="mr-3"><i class="ti-reload"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body pd-0">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>PO Number</th>
+                                    <th>Vendor Name</th>
+                                    <th>Order Date</th>
+                                    <th>Delivery Date</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="po-table-body">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ Form Element End -->
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    $('.selectpicker').select2({
+        placeholder: ''
+    });
+    function checkMaxMin(element) {
+        if ($(element).val() == "") {
+            $(element).val($(element).attr('min'));
+        } else {
+            if (parseFloat($(element).attr('max')) < parseFloat($(element).val())) {
+                $(element).val($(element).attr('max'));
+            }
+            if (parseFloat($(element).attr('min')) > parseFloat($(element).val())) {
+                $(element).val($(element).attr('min'));
+            }
+        }
+    }
+    $(document).on('click', '.add_btn', function () {
+        $('.add_more_content').append(`<div class="form-row content_parent">
+                                        <div class="col-md-3 mb-3">
+                                            <label>Item <span class="required-indicator">*</span></label>
+                                            <input type="text" name="item-name" class="item-name form-control" placeholder="Item Name" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label>Rate <span class="required-indicator">*</span></label>
+                                            <input type="text" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                                name="item-rate" min="0.01" class="form-control item-rate"
+                                                placeholder="0.00" required>
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label>Quantity <span class="required-indicator">*</span></label>
+                                            <input type="text" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                                name="item-quantity" min="1" class="form-control item-quantity"
+                                                placeholder="Quantity" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label>Price <span class="required-indicator">*</span></label>
+                                            <input type="text" onkeyup="checkMaxMin(this)" readonly
+                                                onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                                name="item-price" min="0.01" class="form-control item-price"
+                                                placeholder="0.00" required>
+                                        </div>
+                                        <div class="col-md-1 mb-4 text-center ">
+                                            <button type="button" class="btn remove_btn mt-1"><i
+                                                    class="fa fa-minus"></i></button>
+                                        </div>
+                                </div>`);
+        $('.selectpicker').select2({
+            placeholder: ''
+        });
+    });
+
+    $(document).on('click', '.remove_btn', function () {
+        $(this).parents().closest('.content_parent').remove();
+    });
+
+    // jQuery Document Ready
+    $(document).ready(function () {
+        // Fetch Vendors
+        fetchVendors();
+
+        // Fetch Purchase Orders
+        fetchPurchaseOrders();
+    });
+
+    // Fetch Vendors
+    function fetchVendors() {
+        $.ajax({
+            url: '/api/vendors/',
+            method: 'GET',
+            success: function (data) {
+                displayVendors(data);
+                displayVendorsInPOForm(data);
+            }
+        });
+    }
+
+    // Fetch Purchase Orders
+    function fetchPurchaseOrders() {
+        $.ajax({
+            url: '/api/purchase_orders/',
+            method: 'GET',
+            success: function (data) {
+                displayPurchaseOrders(data);
+            }
+        });
+    }
+
+    // Fetch Vendor Performance Metrics
+    function fetchVendorPerformance(vendorId) {
+        $.ajax({
+            url: '/api/vendors/' + vendorId + '/performance/',
+            method: 'GET',
+            success: function (data) {
+                displayVendorPerformance(data);
+            }
+        });
+    }
+
+    // Create Vendor
+    $(document).on('submit', '#create-vendor-form', function (e) {
+        e.preventDefault();
+        $('.vendor-submit-btn').text('Submitting...');
+        $('.vendor-submit-btn').prop('disabled', true);
+        var vendorData = {
+            name: $('#vendor-name').val(),
+            contact_details: $('#vendor-contact').val(),
+            address: $('#vendor-address').val(),
+            vendor_code: $('#vendor-code').val(),
+        };
+
+        $.ajax({
+            url: '/api/vendors/',
+            method: 'POST',
+            data: vendorData,
+            success: function () {
+                $('.vendor-submit-btn').text('Create Vendor');
+                $('.vendor-submit-btn').prop('disabled', false);
+                fetchVendors(); // Refresh the vendor list after creating a new vendor
+            },
+            error: function (error) {
+                $('.vendor-submit-btn').text('Create Vendor');
+                $('.vendor-submit-btn').prop('disabled', false);
+                $('.vendor-success-msg-txt').text("");
+                $('.vendor-error-msg-txt').removeClass('text-secondary').removeClass('text-info').removeClass('text-success').removeClass('text-warning').removeClass('text-danger');
+                $('.vendor-error-msg-txt').addClass('text-danger');
+                $('.vendor-error-msg-txt').text(error.responseJSON != null ? Object.values(error.responseJSON)[0][0] : error.responseText);
+            }
+        });
+    })
+
+    // Create Purchase Order
+    $(document).on('submit', '#create-po-form', function (e) {
+        e.preventDefault();
+        $('.po-submit-btn').text('Submitting...');
+        $('.po-submit-btn').prop('disabled', true);
+        // Construct the items array
+        var items = [];
+        var total_quantity = 0;
+        $('.content_parent').each(function () {
+            total_quantity += parseInt($(this).find('.item-quantity').val());
+            var item = {
+                name: $(this).find('.item-name').val(),
+                rate: $(this).find('.item-rate').val(),
+                quantity: parseInt($(this).find('.item-quantity').val()),
+                price: parseFloat($(this).find('.item-price').val()),
+            };
+            items.push(item);
+        });
+
+        var poData = {
+            po_number: $('#po-number').val(),
+            vendor: $('#vendor-id').val(),
+            order_date: $('#order-date').val(),
+            delivery_date: $('#delivery-date').val(),
+            items: items, // Corrected: items should be an array of objects
+            status: $('#status').val(),
+            quantity: total_quantity,
+            quality_rating: $('#quality-rating').val(),
+            issue_date: $('#issue-date').val(),
+            acknowledgment_date: $('#acknowledgment-date').val(),
+        };
+
+        $.ajax({
+            url: '/api/purchase_orders/',
+            method: 'POST',
+            data: JSON.stringify(poData), // Use JSON.stringify for the entire data object
+            contentType: 'application/json', // Set content type to JSON
+            success: function () {
+                $('.po-submit-btn').text('Create Purchase Order');
+                $('.po-submit-btn').prop('disabled', false);
+                fetchPurchaseOrders(); // Refresh the PO list after creating a new PO
+            },
+            error: function (error) {
+                $('.po-submit-btn').text('Create Purchase Order');
+                $('.po-submit-btn').prop('disabled', false);
+                $('.po-success-msg-txt').text("");
+                $('.po-error-msg-txt').removeClass('text-secondary').removeClass('text-info').removeClass('text-success').removeClass('text-warning').removeClass('text-danger');
+                $('.po-error-msg-txt').addClass('text-danger');
+                $('.po-error-msg-txt').text(error.responseJSON != null ? Object.values(error.responseJSON)[0][0] : error.responseText);
+            }
+        });
+    })
+
+    // Display Vendors
+    function displayVendors(vendors) {
+        vendor_tbody_text = ``;
+        for (let index = 0; index < vendors.length; index++) {
+            const element = vendors[index];
+            vendor_tbody_text += `<tr>
+                    <td>${index + 1}</td>
+                    <td>${element.name}</td>
+                    <td>${element.vendor_code}</td>
+                    <td>${element.contact_details}</td>
+                    <td>${element.address}</td>
+                    <td>
+                        <a href="javascript:void(0)" onclick=fetchVendorPerformance(${element.id}) class="table-action mg-r-10"> <i class="fa fa-calendar-minus-o"></i> </a>
+                    </td>
+                </tr>`;
+        }
+        $('#vendor-table-body').html(vendor_tbody_text);
+    }
+
+    // Display Vendors
+    function displayVendorsInPOForm(vendors) {
+        var vendor_options_text = `<option value="">Choose...</option>`;
+        for (let index = 0; index < vendors.length; index++) {
+            vendor_options_text += `<option value="${vendors[index].id}">${vendors[index].name}</option>`;
+        }
+        $('#vendor-id').html(vendor_options_text);
+    }
+
+    // Formatting Date
+    function formatDate(dateString) {
+        var date = new Date(dateString);
+        var formattedDate = date.toLocaleString("en-US", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+            hour: "numeric",
+            minute: "numeric",
+            second: "numeric"
+        });
+        return formattedDate;
+    }
+
+    // Display Purchase Orders
+    function displayPurchaseOrders(purchaseOrders) {
+        po_tbody_text = ``;
+        for (let index = 0; index < purchaseOrders.length; index++) {
+            const element = purchaseOrders[index];
+            po_tbody_text += `<tr>
+                    <td>${index + 1}</td>
+                    <td>${element.po_number}</td>
+                    <td>${element.vendor_name}</td>
+                    <td>${formatDate(element.order_date)}</td>
+                    <td>${formatDate(element.delivery_date)}</td>
+                    <td>${element.status}</td>
+                </tr>`;
+        }
+        $('#po-table-body').html(po_tbody_text);
+    }
+
+    // Display Vendor Performance Metrics
+    function displayVendorPerformance(metrics) {
+        var performanceMetrics = $('#performance-metrics');
+        performanceMetrics.empty();
+
+        // Display the metrics as desired, for example:
+        performanceMetrics.append($('<p>').text('On-Time Delivery Rate: ' + metrics.on_time_delivery_rate));
+        performanceMetrics.append($('<p>').text('Quality Rating Average: ' + metrics.quality_rating_avg));
+        performanceMetrics.append($('<p>').text('Average Response Time: ' + metrics.average_response_time));
+        performanceMetrics.append($('<p>').text('Fulfillment Rate: ' + metrics.fulfillment_rate));
+    }
+
+    // On Change Item Quantity, Price Update
+    $(document).on('keyup change', '.item-quantity', function () {
+        item_quantity = $(this).val();
+        rate = $(this).parents(".content_parent").find('.item-rate').val();
+
+        if (rate != undefined && rate != "" && item_quantity != undefined && item_quantity != "") {
+            item_price = (parseFloat(item_quantity) * parseFloat(rate)).toFixed(2);
+            $(this).parents(".content_parent").find('.item-price').val(item_price);
+        }
+    });
+
+    // On Change Rate, Price Update
+    $(document).on('keyup change', '.item-rate', function () {
+        rate = $(this).val();
+        item_quantity = $(this).parents(".content_parent").find('.item-quantity').val();
+        if (rate != undefined && rate != "" && item_quantity != undefined && item_quantity != "") {
+            item_price = (parseFloat(item_quantity) * parseFloat(rate)).toFixed(2);
+            $(this).parents(".content_parent").find('.item-price').val(item_price);
+        }
+    });
+</script>
+{% endblock %}

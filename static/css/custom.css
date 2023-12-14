@@ -1,0 +1,20 @@
+.logo a.logo-img img {
+    max-height: 50px;
+}
+
+.selectpicker {
+    height: 100px;
+}
+
+.required-indicator {
+    color: red;
+}
+
+.input-group-addon {
+    border: 1px solid #e7e7e7;
+    background: #f7f7f7;
+}
+
+.colorpicker-alpha {
+    display: none !important;
+}

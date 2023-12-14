@@ -1,0 +1,34 @@
+{% load static %}
+<div class="page-sidebar">
+  <div class="logo">
+    <a class="logo-img" href="{% url 'superuser:dashboard' %}">
+      <img class="desktop-logo" src="{% static 'images/logo.png' %}" alt="">
+      <img class="small-logo" src="{% static 'images/login-logo.png' %}" alt="">
+    </a>
+    <a id="sidebar-toggle-button-close"><i class="wd-20" data-feather="x"></i> </a>
+  </div>
+  <div class="page-sidebar-inner">
+    <div class="page-sidebar-menu">
+      <ul class="accordion-menu">
+        <li class="{% if request.path == '/' %}active{% endif %}">
+          <a href="{% url 'superuser:dashboard' %}"><i data-feather="home"></i>
+            <span>Dashboard</span>
+          </a>
+        </li>
+        <li class="{% if request.path == '/vendor-list' %}open active{% endif %}">
+          <a href="{% url 'superuser:vendorList' %}"><i data-feather="users"></i>
+            <span>Vendor</span></a>
+        </li>
+        <li class="{% if request.path == '/purchase-order-list' %}open active{% endif %}">
+          <a href="{% url 'superuser:purchaseOrderList' %}"><i data-feather="file-text"></i>
+            <span>Purchase Order</span></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <div class="sidebar-footer">
+    <a class="pull-left signout" href="javascript:void(0)" data-toggle="tooltip" data-placement="top"
+      data-original-title="Sing Out">
+      <i data-feather="log-out" class="wd-16"></i></a>
+  </div>
+</div>

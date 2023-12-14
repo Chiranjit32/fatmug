@@ -1,0 +1,353 @@
+{% extends 'portal/base.html' %}
+{% load static %}
+
+{% block css %}
+<style>
+    .input-group-addon {
+        border-left: none;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="wrapper">
+    <!--================================-->
+    <!-- Breadcrumb Start -->
+    <!--================================-->
+    <div class="pageheader pd-t-25 pd-b-35">
+        <div class="d-flex justify-content-between">
+            <div class="clearfix">
+                <div class="pd-t-5 pd-b-5">
+                    <h1 class="pd-0 mg-0 tx-20 tx-dark">{{parent_page_title}} {{page_title}}</h1>
+                </div>
+                <div class="breadcrumb pd-0 mg-0">
+                    {% for breadcrumb in breadcrumbs %}
+                    {% if forloop.counter != breadcrumbs|length %}
+                    <a class="breadcrumb-item" href="{{breadcrumb.url}}">{{breadcrumb.name}}</a>
+                    {% else %}
+                    <span class="breadcrumb-item active">{{breadcrumb.name}}</span>
+                    {% endif %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ Breadcrumb End -->
+    <!--================================-->
+    <!-- Form Element Start -->
+    <!--================================-->
+    <div class="row row-xs clearfix">
+        <div class="col-md-12 col-lg-12">
+            {% if messages %}
+            {% for message in messages %}
+            {% if forloop.counter == messages|length %}
+            <div class="{{ message.tags }} success-msg-txt" style="height: 30px; text-align: center;">{{ message }}
+            </div>
+            {% endif %}
+            {% endfor %}
+            {% endif %}
+            <div class="error-msg-txt" style="height: 30px; text-align: center;"></div>
+            <div class="card mg-b-30">
+                <div class="card-header">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="card-header-title tx-13 mb-0">{{page_title}}</h6>
+                        </div>
+                        <div class="text-right">
+                            <div class="d-flex">
+                                <a href="{% url 'superuser:purchaseOrderList' %}" class="mr-3"><i
+                                        class="fa fa-step-backward"></i></a>
+                                <a href="" class="mr-3"><i class="ti-reload"></i></a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <form id="edit_form" class="needs-validation" novalidate>
+                        <input type="hidden" id="pk" name="pk" value="{{purchaseOrder.pk}}">
+                        <div class="form-row">
+                            <div class="col-md-6 mb-3">
+                                <label>PO Number <span class="required-indicator">*</span></label>
+                                <input type="text" value="{{purchaseOrder.po_number}}" name="po-number" id="po-number" class="form-control"
+                                    placeholder="PO Number" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Vendor ID <span class="required-indicator">*</span></label>
+                                <div class="input-group">
+                                    <select class="custom-select selectpicker" id="vendor-id" name="vendor-id" required>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Order Date <span class="required-indicator">*</span></label>
+                                <input type="datetime-local" value="{{purchaseOrder.order_date|date:'Y-m-d h:m:s'}}" name="order-date" id="order-date" class="form-control"
+                                    placeholder="Order Date" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Delivery Date <span class="required-indicator">*</span></label>
+                                <input type="datetime-local" value="{{purchaseOrder.delivery_date|date:'Y-m-d h:m:s'}}" name="delivery-date" id="delivery-date"
+                                    class="form-control" placeholder="Delivery Date" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Issue Date <span class="required-indicator">*</span></label>
+                                <input type="datetime-local" value="{{purchaseOrder.issue_date|date:'Y-m-d h:m:s'}}" name="issue-date" id="issue-date" class="form-control"
+                                    placeholder="Issue Date" required>
+                            </div>
+                            <div class="col-md-3 mb-3">
+                                <label>Acknowledgment Date <span class="required-indicator">*</span></label>
+                                <input type="datetime-local" value="{{purchaseOrder.acknowledgment_date|date:'Y-m-d h:m:s'}}" name="acknowledgment-date" id="acknowledgment-date"
+                                    class="form-control" placeholder="Acknowledgment Date" required>
+                            </div>
+                            <div class="col-md-12">
+                                {% for item in purchaseOrder.items %}
+                                <div class="form-row content_parent">
+                                    <div class="col-md-3 mb-3">
+                                        <label>Item <span class="required-indicator">*</span></label>
+                                        <input type="text" value="{{item.name}}" name="item-name" class="item-name form-control"
+                                            placeholder="Item Name" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Rate <span class="required-indicator">*</span></label>
+                                        <input type="text" value="{{item.rate}}" onkeyup="checkMaxMin(this)"
+                                            onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                            name="item-rate" min="0.01" class="form-control item-rate"
+                                            placeholder="0.00" required>
+                                    </div>
+                                    <div class="col-md-2 mb-3">
+                                        <label>Quantity <span class="required-indicator">*</span></label>
+                                        <input type="text" value="{{item.quantity}}" onkeyup="checkMaxMin(this)"
+                                            onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                            name="item-quantity" min="1" class="form-control item-quantity"
+                                            placeholder="Quantity" required>
+                                    </div>
+                                    <div class="col-md-3 mb-3">
+                                        <label>Price <span class="required-indicator">*</span></label>
+                                        <input type="text" value="{{item.price}}" onkeyup="checkMaxMin(this)" readonly
+                                            onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                            name="item-price" min="0.01" class="form-control item-price"
+                                            placeholder="0.00" required>
+                                    </div>
+                                    <div class="col-md-1 mb-4 text-center ">
+                                        {% if forloop.counter == 1 %}
+                                        <button type="button" class="btn add_btn mt-1"><i class="fa fa-plus"></i></button>
+                                        {% else %}
+                                        <button type="button" class="btn remove_btn mt-1"><i class="fa fa-minus"></i></button>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                            <div class="add_more_content col-md-12">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Status <span class="required-indicator">*</span></label>
+                                <input type="text" value="{{purchaseOrder.status}}" name="status" id="status" class="form-control" placeholder="Status"
+                                    required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label>Quality Rating <span class="required-indicator">*</span></label>
+                                <input type="text" value="{{purchaseOrder.quality_rating}}" onkeyup="checkMaxMin(this)" max="5" min="0"
+                                    onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                    name="quality-rating" id="quality-rating" class="form-control" placeholder="5"
+                                    required>
+                            </div>
+                        </div>
+                        <button class="btn btn-success submit-btn" type="submit">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--/ Form Element End -->
+</div>
+{% endblock %}
+
+{% block js %}
+<script>
+    // Example starter JavaScript for disabling form submissions if there are invalid fields
+    (function () {
+        'use strict';
+        window.addEventListener('load', function () {
+            // Fetch all the forms we want to apply custom Bootstrap validation styles to
+            var forms = document.getElementsByClassName('needs-validation');
+            // Loop over them and prevent submission
+            var validation = Array.prototype.filter.call(forms, function (form) {
+                form.addEventListener('submit', function (event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+</script>
+<script>
+    $('.selectpicker').select2({
+        placeholder: ''
+    });
+
+    var selected_vendor = "{{purchaseOrder.vendor_id}}";
+    $(document).ready(function () {
+        $.ajax({
+            url: "{% url 'api:vendor-list-create' %}?find_all=1",
+            type: 'GET',
+            data: ({}),
+            headers: {
+                'Authorization': getCookieValue("accessToken")
+            },
+            success: function (response) {
+                if (response.status == 200) {
+                    displayVendorsInPOForm(response);
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                $('.error-msg-txt').text(error.responseJSON != null ? error.responseJSON.detail : error.statusText);
+            }
+        });
+    });
+
+    function displayVendorsInPOForm(response) {
+        var vendor_options_text = `<option value="">Choose...</option>`;
+        for (let index = 0; index < response.page_items.length; index++) {
+            vendor_options_text += `<option ${response.page_items[index].pk == selected_vendor ? 'selected' : '' } value="${response.page_items[index].pk}">${response.page_items[index].name}</option>`;
+        }
+        $('#vendor-id').html(vendor_options_text)
+    }
+
+    function checkMaxMin(element) {
+        if ($(element).val() == "") {
+            $(element).val($(element).attr('min'));
+        } else {
+            if (parseFloat($(element).attr('max')) < parseFloat($(element).val())) {
+                $(element).val($(element).attr('max'));
+            }
+            if (parseFloat($(element).attr('min')) > parseFloat($(element).val())) {
+                $(element).val($(element).attr('min'));
+            }
+        }
+    }
+    $(document).on('click', '.add_btn', function () {
+        $('.add_more_content').append(`<div class="form-row content_parent">
+                                        <div class="col-md-3 mb-3">
+                                            <label>Item <span class="required-indicator">*</span></label>
+                                            <input type="text" name="item-name" class="item-name form-control" placeholder="Item Name" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label>Rate <span class="required-indicator">*</span></label>
+                                            <input type="text" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                                name="item-rate" min="0.01" class="form-control item-rate"
+                                                placeholder="0.00" required>
+                                        </div>
+                                        <div class="col-md-2 mb-3">
+                                            <label>Quantity <span class="required-indicator">*</span></label>
+                                            <input type="text" onkeyup="checkMaxMin(this)"
+                                                onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                                name="item-quantity" min="1" class="form-control item-quantity"
+                                                placeholder="Quantity" required>
+                                        </div>
+                                        <div class="col-md-3 mb-3">
+                                            <label>Price <span class="required-indicator">*</span></label>
+                                            <input type="text" onkeyup="checkMaxMin(this)" readonly
+                                                onkeypress="return (event.charCode >=45 && event.charCode <= 46) || (event.charCode >= 48 && event.charCode <= 57)"
+                                                name="item-price" min="0.01" class="form-control item-price"
+                                                placeholder="0.00" required>
+                                        </div>
+                                        <div class="col-md-1 mb-4 text-center ">
+                                            <button type="button" class="btn remove_btn mt-1"><i
+                                                    class="fa fa-minus"></i></button>
+                                        </div>
+                                </div>`);
+        $('.selectpicker').select2({
+            placeholder: ''
+        });
+    });
+
+    $(document).on('click', '.remove_btn', function () {
+        $(this).parents().closest('.content_parent').remove();
+    });
+
+    // On Change Item Quantity, Price Update
+    $(document).on('keyup change', '.item-quantity', function () {
+        item_quantity = $(this).val();
+        rate = $(this).parents(".content_parent").find('.item-rate').val();
+
+        if (rate != undefined && rate != "" && item_quantity != undefined && item_quantity != "") {
+            item_price = (parseFloat(item_quantity) * parseFloat(rate)).toFixed(2);
+            $(this).parents(".content_parent").find('.item-price').val(item_price);
+        }
+    });
+
+    // On Change Rate, Price Update
+    $(document).on('keyup change', '.item-rate', function () {
+        rate = $(this).val();
+        item_quantity = $(this).parents(".content_parent").find('.item-quantity').val();
+        if (rate != undefined && rate != "" && item_quantity != undefined && item_quantity != "") {
+            item_price = (parseFloat(item_quantity) * parseFloat(rate)).toFixed(2);
+            $(this).parents(".content_parent").find('.item-price').val(item_price);
+        }
+    });
+
+    $(document).on('submit', '#edit_form', function (e) {
+        e.preventDefault();
+        $('.submit-btn').text('Submitting...');
+        $('.submit-btn').prop('disabled', true);
+        // Construct the items array
+        var items = [];
+        var total_quantity = 0;
+        $('.content_parent').each(function () {
+            total_quantity += parseInt($(this).find('.item-quantity').val());
+            var item = {
+                name: $(this).find('.item-name').val(),
+                rate: $(this).find('.item-rate').val(),
+                quantity: parseInt($(this).find('.item-quantity').val()),
+                price: parseFloat($(this).find('.item-price').val()),
+            };
+            items.push(item);
+        });
+
+        var poData = {
+            po_number: $('#po-number').val(),
+            vendor: $('#vendor-id').val(),
+            order_date: $('#order-date').val(),
+            delivery_date: $('#delivery-date').val(),
+            items: items, // Corrected: items should be an array of objects
+            status: $('#status').val(),
+            quantity: total_quantity,
+            quality_rating: $('#quality-rating').val(),
+            issue_date: $('#issue-date').val(),
+            acknowledgment_date: $('#acknowledgment-date').val(),
+        };
+        var pk = $('#pk').val();
+        $.ajax({
+            url: "{% url 'api:purchase-order-retrieve-update-delete' 1 %}".replace('1', pk),
+            method: 'PUT',
+            data: poData,
+            headers: {
+                'Authorization': getCookieValue("accessToken")
+            },
+            success: function (response) {
+                $('.submit-btn').text('Submit');
+                $('.submit-btn').prop('disabled', false);
+                if (response.status == 200) {
+                    locationAfterMessageStore(response.message, 'success', "{% url 'superuser:purchaseOrderList' %}");
+                } else {
+                    alert(response.message);
+                }
+            },
+            error: function (error) {
+                $('.submit-btn').text('Submit');
+                $('.submit-btn').prop('disabled', false);
+                $('.success-msg-txt').text("");
+                $('.error-msg-txt').removeClass('text-secondary').removeClass('text-info').removeClass('text-success').removeClass('text-warning').removeClass('text-danger');
+                $('.error-msg-txt').addClass('text-danger');
+                $('.error-msg-txt').text(error.responseJSON != null ? Object.values(error.responseJSON)[0][0] : error.responseText);
+            }
+        });
+    });
+</script>
+{% endblock %}

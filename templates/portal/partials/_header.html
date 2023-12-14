@@ -1,0 +1,41 @@
+{% load static %}
+
+<div class="page-header">
+  <nav class="navbar navbar-default">
+    <div class="navbar-header">
+      <div class="navbar-brand">
+        <ul class="list-inline">
+          <li class="list-inline-item"><a class="hidden-md hidden-lg" href="#" id="sidebar-toggle-button"><i
+                data-feather="menu" class="wd-20"></i></a></li>
+          <li class="list-inline-item"><a class=" hidden-xs hidden-sm" href="#" id="collapsed-sidebar-toggle-button"><i
+                data-feather="menu" class="wd-20"></i></a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="header-right pull-right">
+      <ul class="list-inline justify-content-end">
+        <li class="list-inline-item dropdown">
+          <a href="" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <img src="{% static 'images/users-face/no-user.png' %}" class="img-fluid wd-30 ht-30 rounded-circle" alt="">
+          </a>
+          <div class="dropdown-menu dropdown-menu-right dropdown-profile">
+            <div class="user-profile-area">
+              <div class="user-profile-heading">
+                <div class="profile-thumbnail">
+                  <img src="{% static 'images/users-face/no-user.png' %}" class="img-fluid wd-35 ht-35 rounded-circle"
+                    alt="">
+                </div>
+                <div class="profile-text">
+                  <h6>{{request.user.name}}</h6>
+                  <span>{{request.user.email}}</span>
+                </div>
+              </div>
+              <a href="javascript:void(0)" class="dropdown-item signout"><i data-feather="power" class="wd-16 mr-2"></i>
+                Sign-out</a>
+            </div>
+          </div>
+        </li>
+      </ul>
+    </div>
+  </nav>
+</div>
