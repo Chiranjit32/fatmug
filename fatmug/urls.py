@@ -34,10 +34,6 @@ urlpatterns = [
 
     path('api/', include('api.urls')),
 
-    path('api-auth/', include('rest_framework.urls')),  # This line adds the Browsable API views
-    # path('docs/', include_docs_urls(title='Fatmug API')),  # Optional: Include API documentation
-    # path('api-token-auth/', obtain_auth_token, name='api_token_auth'),  # Optional: Token authentication endpoint
-
     re_path(r'^media/(?P<path>.*)$', serve,{'document_root': settings.MEDIA_ROOT}),
     re_path(r'^static/(?P<path>.*)$', serve,{'document_root': settings.STATIC_ROOT}),
 ]
